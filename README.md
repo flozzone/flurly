@@ -1,4 +1,5 @@
 [![Publish Docker image](https://github.com/flozzone/flurly/actions/workflows/publish-docker-image.yaml/badge.svg)](https://github.com/flozzone/flurly/actions/workflows/publish-docker-image.yaml)
+[![Deployment pipeline](https://github.com/flozzone/flurly/actions/workflows/minikube-test.yaml/badge.svg)](https://github.com/flozzone/flurly/actions/workflows/minikube-test.yaml)
 
 # Flurli
 
