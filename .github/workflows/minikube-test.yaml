@@ -58,13 +58,13 @@ jobs:
         run: curl $URL/health
 
       - name: Wait for deployment to be unavailable
-        run: kubectl wait --for=condition=available=false --timeout=600s deploy/flurly
+        run: kubectl wait --for=condition=available=false --timeout=120s deploy/flurly
 
       - name: Scale up to 3 pods
         run: kubectl scale --replicas=3 deploy/flurly
 
       - name: Wait for deployment to be available again
-        run: kubectl wait --for=condition=available --timeout=600s deploy/flurly
+        run: kubectl wait --for=condition=available --timeout=120s deploy/flurly
 
       - name: Query health endpoint again
         run: curl $URL/health
