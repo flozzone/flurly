@@ -1,11 +1,11 @@
-name: Run the flurly deployment
+name: Flurly pipeline
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   example:
@@ -27,19 +27,44 @@ jobs:
       - name: Create deployment
         run: kubectl apply -f k8s/deployment.yaml
 
+      - name: Describe deployment
+        run: kubectl describe deploy/flurly
+
       - name: Expose deployment
         run: kubectl expose deployment flurly --type=NodePort --port=3000
 
-      - name: Get deployment
-        run: kubectl get deploy/flurly
+      - name: Describe service
+        run: kubectl describe service/flurly
 
-      - name: Wait for deployment
+      - name: Wait for deployment to be available
         run: kubectl wait --for=condition=available --timeout=600s deploy/flurly
 
       - name: Get pods
         run: kubectl get pod
 
-      - name: Get pods
-        run: export URL=$(minikube service flurly --url)
+      - name: Retrieve service URL
+        run: echo "URL=$(minikube service flurly --url)" >> $GITHUB_ENV
 
+      - name: Query root path
+        run: curl $URL
 
+      - name: Query health endpoint
+        run: curl $URL/health
+
+      - name: Make it crash
+        run: curl -X POST $URL/crash
+
+      - name: Query health endpoint again
+        run: curl $URL/health
+
+      - name: Wait for deployment to be unavailable
+        run: kubectl wait --for=condition=available=false --timeout=120s deploy/flurly
+
+      - name: Scale up to 3 pods
+        run: kubectl scale --replicas=3 deploy/flurly
+
+      - name: Wait for deployment to be available again
+        run: kubectl wait --for=condition=available --timeout=120s deploy/flurly
+
+      - name: Query health endpoint again
+        run: curl $URL/health
