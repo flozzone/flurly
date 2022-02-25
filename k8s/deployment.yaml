@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flurly
+  labels:
+    app: flurly
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flurly
+  template:
+    metadata:
+      labels:
+        app: flurly
+    spec:
+      containers:
+      - name: flurly
+        image: florinzz/flurly:latest
+        ports:
+        - containerPort: 3000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
