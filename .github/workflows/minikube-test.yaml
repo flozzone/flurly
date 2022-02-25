@@ -33,5 +33,13 @@ jobs:
       - name: Get deployment
         run: kubectl get deploy/flurly
 
+      - name: Wait for deployment
+        run: kubectl wait --for=condition=available --timeout=600s deploy/flurly
+
       - name: Get pods
         run: kubectl get pod
+
+      - name: Get pods
+        run: export URL=$(minikube service flurly --url)
+
+
