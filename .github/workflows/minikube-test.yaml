@@ -1,0 +1,31 @@
+name: Run the flurly deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  example:
+    name: Example Minikube-Kubernetes Cluster interaction
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.4.3
+        with:
+          minikube version: 'v1.24.0'
+          kubernetes version: 'v1.23.0'
+          github token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create namespace
+        run: kubectl create namespace flurly
+
+      - name: Create deployment
+        run: kubectl apply -f k8s/deployment.yaml
+
+      - name: Create namespace
+        run: kubectl expose deployment flurly --type=NodePort --port=3000
+
+      - name: Create namespace
+        run: kubectl get pods
