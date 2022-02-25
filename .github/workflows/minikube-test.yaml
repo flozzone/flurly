@@ -1,4 +1,4 @@
-name: Run the flurly deployment
+name: Flurly pipeline
 
 on:
   push:
