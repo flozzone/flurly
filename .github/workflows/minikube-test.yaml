@@ -39,7 +39,29 @@ jobs:
       - name: Get pods
         run: kubectl get pod
 
-      - name: Get pods
-        run: export URL=$(minikube service flurly --url)
+      - name: Get URL
+        run: echo "URL=$(minikube service flurly --url)" >> $GITHUB_ENV
 
+      - name: Query root path
+        run: curl $URL
 
+      - name: Query health endpoint
+        run: curl $URL/health
+
+      - name: Make it fail
+        run: curl -X POST $URL
+
+      - name: Query health endpoint again
+        run: curl $URL/health
+
+      - name: Wait for deployment to be unavailable
+        run: kubectl wait --for=condition=available=false --timeout=600s deploy/flurly
+
+      - name: Scale up to 3 pods
+        run: kubectl scale --replicas=3 deploy/flurly
+
+      - name: Wait for deployment to be available again
+        run: kubectl wait --for=condition=available --timeout=600s deploy/flurly
+
+      - name: Query health endpoint again
+        run: curl $URL/health
