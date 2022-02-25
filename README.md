@@ -1,3 +1,5 @@
+[![Publish Docker image](https://github.com/flozzone/flurly/actions/workflows/publish-docker-image.yaml/badge.svg)](https://github.com/flozzone/flurly/actions/workflows/publish-docker-image.yaml)
+
 # Flurli
 
 An app to show how to deploy a NodeJS application on K8s.
