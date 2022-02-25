@@ -3,6 +3,9 @@ name: Run the flurly deployment
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches:
+      - master
 
 jobs:
   example:
@@ -24,8 +27,11 @@ jobs:
       - name: Create deployment
         run: kubectl apply -f k8s/deployment.yaml
 
-      - name: Create namespace
+      - name: Expose deployment
         run: kubectl expose deployment flurly --type=NodePort --port=3000
 
-      - name: Create namespace
-        run: kubectl get pods
+      - name: Get deployment
+        run: kubectl get deploy/flurly
+
+      - name: Get pods
+        run: kubectl get pod
