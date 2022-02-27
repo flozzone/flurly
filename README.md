@@ -88,7 +88,7 @@ and we will push the image to the private registry inside our Minikube K8s clust
 docker push localhost:5000/flurly:latest
 ```
 
-We can now stop the `kubectl port-forward` command from before.
+We can now stop the `kubectl port-forward` command from before. 
 
 ## Run Flurly on K8s as Pod
 
@@ -98,9 +98,16 @@ a simple a [Pod](https://kubernetes.io/de/docs/concepts/workloads/pods/) to chec
 pulled.
 
 ```shell
-# start a pod running our application
+# start a pod running our application from the private registry or
 kubectl run flurly --image=localhost:5000/flurly:latest --port=3000
 
+# or the public registry
+kubectl run flurly --image=florinzz/flurly:latest --port=3000
+```
+
+We will use the Docker Hub registry in the following steps.
+
+```shell
 # port forward the container port to our local host and keep this running
 kubectl port-forward pod/flurly 8080:3000
 export URL=http://localhost:8080
@@ -213,6 +220,10 @@ and load balancing using the [Ingress](https://kubernetes.io/docs/concepts/servi
 resource to register our service as `flurly.info`.
 
 ```shell
+# enable the ingress addon of Minikube
+minikube addons enable ingress
+
+# create the Ingress resource
 kubectl apply -f k8s/ingress.yaml
 
 # this exposes our application at address
