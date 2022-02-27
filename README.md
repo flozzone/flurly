@@ -249,3 +249,9 @@ curl $URL
 ```shell
 kubectl delete namespace flurly
 ```
+
+## Helm chart
+
+```shell
+helm install flurly charts/flurly
+```
