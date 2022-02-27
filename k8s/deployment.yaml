@@ -18,8 +18,8 @@ spec:
       - name: flurly
 
         # change the container image to run, when pulling from another registry
-        #image: florinzz/flurly:latest
-        image: localhost:5000/flurly:latest
+        image: florinzz/flurly:latest
+        #image: localhost:5000/flurly:latest
         ports:
         - containerPort: 3000
         livenessProbe:
