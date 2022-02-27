@@ -1,29 +1,53 @@
 const express = require('express')
 const app = express()
 const port = 3000
+const host = process.env.HOSTNAME
 
-let crash = false;
+let doFail = false;
 
+// handle SIGTERM signal to terminate pod
+process.on('SIGTERM', () => {
+  console.log("Received SIGTERM. Exiting")
+  process.exit(0)
+})
+
+// root entry point
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hi I am Flurly ' + host + '\r\n')
 })
 
 // provide a simple health endpoint
 app.get('/health', (req, res) => {
-  if (!crash) {
-    res.status(200).send('Ok');
+  if (!doFail) {
+    res.status(200).send('Ok\r\n');
   } else {
-    res.status(500).send('APP CRASHED')
+    res.status(500).send(host + ' CRASHED\r\n')
   }
 })
 
-app.post('/crash', (req, res) => {
-  crash = true
-  res.send('App is going to crash!')
-  console.log('App is going to crash!')
+// let the health endpoints fail
+app.post('/fail', (req, res) => {
+  doFail = true
+  res.send('App ' + host + ' is going to fail!\r\n')
+  console.log('App is going to fail!')
 })
 
+// let the app immediately exit with error
+app.post('/crash', (req, res) => {
+  res.send('App ' + host + ' is going to crash!\r\n')
+  console.log('App is going to crash!')
+  process.exit(1)
+})
+
+// let the app immediately exit with success
+app.post('/stop', (req, res) => {
+  res.send('App ' + host + ' is going to stop!\r\n')
+  console.log('App is going to stop!')
+  process.exit(0)
+})
+
+// start the web server
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Flurly app listening on port ${port}`)
 })
 
