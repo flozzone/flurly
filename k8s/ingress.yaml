@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flurly
+  #annotations:
+  #  nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: flurly.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flurly
+                port:
+                  number: 3000
+
