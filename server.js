@@ -4,6 +4,7 @@ const port = 3000
 const host = process.env.HOSTNAME
 
 let doFail = false;
+let leak = [];
 
 // handle SIGTERM signal to terminate pods in K8s
 process.on('SIGTERM', () => {
@@ -50,6 +51,44 @@ app.post('/stop', (req, res) => {
   res.send('App ' + host + ' is going to stop!\r\n')
   console.log('App is going to stop!')
   process.exit(0)
+})
+
+// leak memory
+app.post('/leakmem', (req, res) => {
+  res.send('App ' + host + ' is going to leak memory!\r\n')
+  console.log('App is going to leak memory!')
+
+  // allocate multiple fixed size arrays in a endless loop
+  for (;;) {
+    leak.push(new Array(1024))
+  }
+})
+
+// fibonacci function
+function fibo(n) {
+    if (n < 2) {
+      return 1;
+    } else {
+      return fibo(n - 2) + fibo(n - 1);
+    }
+}
+
+// start a endless look computing random fibonacci numbers to put CPU load
+app.post('/load', async (req, res) => {
+  res.send('App ' + host + ' is going to put high CPU load!\r\n')
+  console.log('App is going to put high CPU load!')
+
+  let numbers = []
+
+  for (let i = 0; i < 99; i++) {
+    numbers.push(Math.random() * 100)
+  }
+
+  await numbers.forEach(async (element) => {
+    let ret = fibo(element);
+    numbers.push(Math.random() * 1000);
+    console.log(ret)
+  });
 })
 
 // start the web server
