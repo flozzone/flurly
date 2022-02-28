@@ -10,13 +10,14 @@ web server providing a few HTTP endpoints to show how this application behaves w
 
 The API provided lets us interact with the application in a simple way.
 
-|  Path   | Method |                         Description                             |
-|---------|--------|-----------------------------------------------------------------|
-| /       | GET    | Welcome response                                                |
-| /health | GET    | Returns HTTP 200 status if everything is ok, HTTP 500 otherwise |
-| /fail   | POST   | Lets `/health` return HTTP 500                                  |
-| /stop   | POST   | Application exits with exit code 0                              |
-| /crash  | POST   | Application exits with exit code 1                              |
+|  Path    | Method |                         Description                             |
+|----------|--------|-----------------------------------------------------------------|
+| /        | GET    | Welcome response                                                |
+| /health  | GET    | Returns HTTP 200 status if everything is ok, HTTP 500 otherwise |
+| /fail    | POST   | Lets `/health` return HTTP 500 from now on                      |
+| /stop    | POST   | Exits with exit code 0                                          |
+| /crash   | POST   | Exits with exit code 1                                          |
+| /leakmem | POST   | Allocates memory in a loop                                      |
 
 ## Prepare the K8s environment
 
@@ -256,6 +257,37 @@ curl $URL
 
 # and we can see that the traffic is evenly distributed between the available pods
 for i in {1..100}; do curl -s $URL; done | sort | uniq -c
+```
+
+## Resource limits
+
+To limit the memory and CPU resources for a pod, resource requests and limits have been defined in order to kill
+a pod when it consumed too much memory or to throttle CPU for a pod which is putting too much load. The following
+configuration in the pod template sets these requests and limits.
+
+```yaml
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+```
+
+Since memory is non-compressible, we can make a pod crash by consuming too much memory by using its `/memleak`
+endpoint.
+
+```shell
+curl -X POST $URL/leakmem
+
+# watch a pod going into error state and restarting
+watch kubectl get pod
+
+# lets check the exit code from last termination
+kc get pod -o json | jq -r '.items[0].status.containerStatuses[0].lastState.terminated.exitCode'
+
+# it says 137, which means pod got killed by OOM
 ```
 
 ## remove everything again
