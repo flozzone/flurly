@@ -5,9 +5,15 @@ const host = process.env.HOSTNAME
 
 let doFail = false;
 
-// handle SIGTERM signal to terminate pod
+// handle SIGTERM signal to terminate pods in K8s
 process.on('SIGTERM', () => {
   console.log("Received SIGTERM. Exiting")
+  process.exit(0)
+})
+
+// handle SIGTERM signal sent from terminal by CTRL+C
+process.on('SIGINT', () => {
+  console.log("Received SIGINT. Exiting")
   process.exit(0)
 })
 

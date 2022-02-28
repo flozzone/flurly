@@ -55,7 +55,7 @@ jobs:
         run: curl -X POST $URL/crash
 
       - name: Query health endpoint again
-        run: curl $URL/health
+        run: curl $URL/health || true
 
       - name: Wait for deployment to be unavailable
         run: kubectl wait --for=condition=available=false --timeout=120s deploy/flurly
