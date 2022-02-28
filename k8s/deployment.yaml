@@ -6,13 +6,18 @@ metadata:
     app: flurly
 spec:
   replicas: 1
+
+  # match pods by their labels in order to scale
   selector:
     matchLabels:
       app: flurly
+
+  # template for the pods crated with this Deployment
   template:
     metadata:
       labels:
         app: flurly
+
     spec:
       containers:
       - name: flurly
@@ -21,11 +26,14 @@ spec:
         image: florinzz/flurly:latest
         #image: localhost:5000/flurly:latest
 
+        # always pull the image when we are testing new images on same tags
         imagePullPolicy: Always
 
+        # application exposes port 3000
         ports:
         - containerPort: 3000
 
+        # define a probe that checks if the application is still running
         livenessProbe:
           httpGet:
             path: /health
@@ -33,6 +41,7 @@ spec:
           initialDelaySeconds: 2
           periodSeconds: 1
 
+        # define a probe to check if the application has started up
         readinessProbe:
           httpGet:
             path: /health
@@ -40,6 +49,7 @@ spec:
           initialDelaySeconds: 2
           periodSeconds: 1
 
+        # define resource requests and limits
         resources:
           limits:
             cpu: 100m
