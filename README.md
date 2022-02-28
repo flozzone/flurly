@@ -253,15 +253,23 @@ kubectl get pod
 
 # until a pod restarts and passes the readinessProbe again
 curl $URL
+
+# and we can see that the traffic is evenly distributed between the available pods
+for i in {1..100}; do curl -s $URL; done | sort | uniq -c
 ```
 
 ## remove everything again
+
+Since we were just working in one namespace and not creating any cluster wide resources, we can remove all
+created resources by deleting our namespace.
 
 ```shell
 kubectl delete namespace flurly
 ```
 
 ## Helm chart
+
+A [Helm](https://helm.sh/) chart is provided to easier deploy this example to a K8s cluster by issuing just one command.
 
 ```shell
 helm install flurly charts/flurly
