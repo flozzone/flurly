@@ -274,3 +274,10 @@ A [Helm](https://helm.sh/) chart is provided to easier deploy this example to a 
 ```shell
 helm install flurly charts/flurly
 ```
+
+One can provide template parameters using the command line or separate `values.yaml` files. Uninstalling
+is as easy as installing:
+
+```shell
+helm uninstall flurly
+```
