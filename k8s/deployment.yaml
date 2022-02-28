@@ -20,6 +20,9 @@ spec:
         # change the container image to run, when pulling from another registry
         image: florinzz/flurly:latest
         #image: localhost:5000/flurly:latest
+
+        imagePullPolicy: Always
+
         ports:
         - containerPort: 3000
         livenessProbe:
@@ -34,4 +37,3 @@ spec:
             port: 3000
           initialDelaySeconds: 2
           periodSeconds: 1
-
